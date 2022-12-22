@@ -1,4 +1,5 @@
 import requests
+import numpy as np
 from tqdm import tqdm
 from bs4 import BeautifulSoup as bs
 import pickle
@@ -42,7 +43,8 @@ def crawling(problem_num, submit_num):
 
 if __name__ == "__main__":
     print("hello world")
-    lst = [[1002, 200]] # 여기에 긁어올 [문제 번호, 제출 수] 넣어주셈
+    # lst = [[1002, 200]] # 여기에 긁어올 [문제 번호, 제출 수] 넣어주셈
+    lst = np.load('id_submit_pair.npy')
     for problem in lst:
         submit_data = crawling(problem[0], problem[1])  # crawling(문제번호,긁어올 제출 현황 수)
         print(len(submit_data))
