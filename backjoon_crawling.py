@@ -41,6 +41,7 @@ def crawling(problem_num, submit_num):
     return total_data
 
 if __name__ == "__main__":
+    print("hello world")
     lst = np.load("id_submit_pair.npy")[0:343] # 343,680,1140,1975
     for problem in lst:
         if not os.path.isfile(f'data/{problem[0]}.pkl'):
@@ -48,3 +49,5 @@ if __name__ == "__main__":
             save_data(submit_data,problem[0])
         else:
             continue
+
+
