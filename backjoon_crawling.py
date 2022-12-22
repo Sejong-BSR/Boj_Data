@@ -1,9 +1,9 @@
+import os
 import requests
 import numpy as np
 from tqdm import tqdm
 from bs4 import BeautifulSoup as bs
 import pickle
-import os
 
 def save_data(data,problem_num):
     if not os.path.exists('data'):
@@ -40,12 +40,11 @@ def crawling(problem_num, submit_num):
 
     return total_data
 
-
 if __name__ == "__main__":
-    print("hello world")
-    # lst = [[1002, 200]] # 여기에 긁어올 [문제 번호, 제출 수] 넣어주셈
-    lst = np.load('id_submit_pair.npy')
+    lst = np.load("id_submit_pair.npy")[0:343] # 343,680,1140,1975
     for problem in lst:
-        submit_data = crawling(problem[0], problem[1])  # crawling(문제번호,긁어올 제출 현황 수)
-        print(len(submit_data))
-        save_data(submit_data,problem[0])
+        if not os.path.isfile(f'data/{problem[0]}.pkl'):
+            submit_data = crawling(problem[0], problem[1])  # crawling(문제번호,긁어올 제출 현황 수)
+            save_data(submit_data,problem[0])
+        else:
+            continue
