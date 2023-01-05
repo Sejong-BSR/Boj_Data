@@ -1,3 +1,4 @@
+import os
 import requests
 import numpy as np
 from tqdm import tqdm
@@ -41,7 +42,6 @@ def crawling(problem_num, submit_num):
             return total_data
 
     return total_data
-
 
 if __name__ == "__main__":
     print("[START] Crawling")
