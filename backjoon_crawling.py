@@ -4,6 +4,8 @@ import numpy as np
 from tqdm import tqdm
 from bs4 import BeautifulSoup as bs
 import pickle
+import os
+import ray
 
 def save_data(data,problem_num):
     if not os.path.exists('data'):
@@ -17,10 +19,11 @@ def load_data():
         data = pickle.load(f)
     print(data)
 
+@ray.remote
 def crawling(problem_num, submit_num):
     url_temp =  f"https://www.acmicpc.net/status?&problem_id={problem_num}"
     total_data = []
-    for _ in tqdm(range(submit_num//20)):
+    for _ in tqdm(range(submit_num//20), miniters=int((submit_num//20)/100)):
         page = requests.get(url_temp)
         soup = bs(page.text, "html.parser")
         elements = soup.select('tbody > tr > td')
@@ -41,13 +44,13 @@ def crawling(problem_num, submit_num):
     return total_data
 
 if __name__ == "__main__":
-    print("hello world")
-    lst = np.load("id_submit_pair.npy")[0:343] # 343,680,1140,1975
-    for problem in lst:
-        if not os.path.isfile(f'data/{problem[0]}.pkl'):
-            submit_data = crawling(problem[0], problem[1])  # crawling(문제번호,긁어올 제출 현황 수)
-            save_data(submit_data,problem[0])
-        else:
-            continue
-
-
+    print("[START] Crawling")
+    START, END = 350, 700
+    id_submit_pair = np.load('id_submit_pair.npy')[START:END] # [문제 번호, 제출 수]
+    ray.init(num_cpus=4)
+    for problem in id_submit_pair:
+        submit_data = ray.get(crawling.remote(problem[0], problem[1]))  # crawling(문제번호,긁어올 제출 현황 수)
+        print(len(submit_data))
+        save_data(submit_data, problem[0])
+    ray.shutdown()
+    print("[END] Crawling")
